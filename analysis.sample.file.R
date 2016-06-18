@@ -9,6 +9,6 @@ analysis.sample.file<-function(filename){
     text.exp = sprintf("sample ratio of core area:%f",length(latency.core)/length(latency))
     out.file = sprintf("%s_latency_result.jpg", filename)
     jpeg(file = out.file)
-    hist(latency.core, breaks = 200)
+    hist(latency, breaks = 200)
     dev.off()
 }

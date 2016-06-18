@@ -70,3 +70,13 @@ vignettes/*.pdf
 # Data file
 *.csv
 .Rproj.user
+
+# Media file
+*.jpeg
+*.jpg
+
+# Achieve file
+*.zip
+*.tar
+*.rar
+*.7z
