@@ -85,6 +85,14 @@ latency.wio.net.mean = latency.number.wio.net.bp %*% as.matrix(latency.wio.net.b
 plot.latency.ll.net.mean = ggplot(data = data.frame(size = 16:256, latency = latency.ll.net.mean[1:241]), mapping = aes(x = size, y = latency))+
   geom_bar(stat= 'identity') + 
   coord_cartesian(ylim=c(3500,4250)) + 
+  labs(x = "Packet Size (byte)", y = "Round trip Latency (ns)") + 
+  ggtitle(title = "Network Latency vs. Size [LL][onload]", subtitle =  "[LL][Onload]")
+plot.latency.ll.net.mean + packet.number.plot.theme
+
+plot.latency.ll.net.mean = ggplot(data = data.frame(size = 16:390, latency = latency.ll.net.mean[1:375]), mapping = aes(x = size, y = latency))+
+  geom_bar(stat= 'identity') + 
+  coord_cartesian(ylim=c(3500,4250)) + 
+  labs(x = "Packet Size (byte)", y = "Round trip Latency (ns)") + 
   ggtitle("Network Latency vs. Size [LL][onload]")
 plot.latency.ll.net.mean + packet.number.plot.theme
 
@@ -93,6 +101,13 @@ plot.latency.ll.net.mean + packet.number.plot.theme
 plot.latency.wio.net.mean = ggplot(data = data.frame(size = 16:256, latency = latency.wio.net.mean[1:241]), mapping = aes(x = size, y = latency))+
   geom_bar(stat= 'identity') + 
   coord_cartesian(ylim=c(4000,5000)) + 
+  ggtitle("Network Latency vs. Size [WIO][onload]")
+plot.latency.wio.net.mean + packet.number.plot.theme
+
+
+plot.latency.wio.net.mean = ggplot(data = data.frame(size = 16:1400, latency = latency.wio.net.mean[1:1385]), mapping = aes(x = size, y = latency))+
+  geom_bar(stat= 'identity') + 
+  coord_cartesian(ylim=c(4000,7500)) + 
   ggtitle("Network Latency vs. Size [WIO][onload]")
 plot.latency.wio.net.mean + packet.number.plot.theme
 
@@ -135,6 +150,140 @@ summary(model.lat.size.wio)
 
 latency.ratio.ll.net.bp = apply(latency.ll.net.bp, 2, function(x) x/sum(x))
 latency.ratio.ll.in.bp = apply(latency.ll.in.bp, 2, function(x) x/sum(x))
+latency.ratio.ll.net.na = apply(latency.ll.net.na, 2, function(x) x/sum(x))
+latency.ratio.ll.in.na = apply(latency.ll.in.na, 2, function(x) x/sum(x))
 latency.ratio.wio.net.bp = apply(latency.wio.net.bp, 2, function(x) x/sum(x))
 latency.ratio.wio.in.bp = apply(latency.wio.in.bp, 2, function(x) x/sum(x))
+latency.ratio.wio.net.na = apply(latency.wio.net.na, 2, function(x) x/sum(x))
+latency.ratio.wio.in.na = apply(latency.wio.in.na, 2, function(x) x/sum(x))
+
+
+
+latency.ratio.normal.in.ll.bp = as.matrix(latency.ratio.ll.in.bp[1:501,1:241])
+tmp = colSums(latency.ratio.ll.in.bp[501:nrow(latency.ratio.ll.in.bp),1:241])
+latency.ratio.normal.in.ll.bp[501,] = tmp
+
+latency.ratio.normal.in.wio.bp = as.matrix(latency.ratio.wio.in.bp[1:501,1:241])
+tmp = colSums(latency.ratio.wio.in.bp[501:nrow(latency.ratio.wio.in.bp),1:241])
+latency.ratio.normal.in.wio.bp[501,] = tmp
+
+
+
+
+
+# 
+plot.latency.ll.in.bp.64 = ggplot(data = data.frame(size = latency.number.ll.in.bp[10:60], count = latency.ratio.ll.in.bp[10:60,49]), mapping = aes(x = size, y = count))+
+  geom_bar(stat= 'identity') + 
+  ggtitle("Count vs. Latency [LL][onload][64]")
+plot.latency.ll.in.bp.64 + packet.number.plot.theme
+
+plot.latency.ll.in.na.64 = ggplot(data = data.frame(size = latency.number.ll.in.na[10:60], count = latency.ratio.ll.in.na[10:60,49]), mapping = aes(x = size, y = count))+
+  geom_bar(stat= 'identity') + 
+  ggtitle("Count vs. Latency [LL][kernel][64]")
+plot.latency.ll.in.na.64 + packet.number.plot.theme
+
+
+plot.latency.wio.in.bp.64 = ggplot(data = data.frame(size = latency.number.wio.in.bp[10:60], count = latency.ratio.wio.in.bp[10:60,49]), mapping = aes(x = size, y = count))+
+  geom_bar(stat= 'identity') + 
+  ggtitle("Count vs. Latency [WIO][onload][64]")
+plot.latency.wio.in.bp.64 + packet.number.plot.theme
+
+plot.latency.wio.in.na.64 = ggplot(data = data.frame(size = latency.number.wio.in.na[10:60], count = latency.ratio.wio.in.na[10:60,49]), mapping = aes(x = size, y = count))+
+  geom_bar(stat= 'identity') + 
+  ggtitle("Count vs. Latency [WIO][kernel][64]")
+plot.latency.wio.in.na.64 + packet.number.plot.theme
+
+
+latency.ratio.ll.combo = data.frame(size= latency.number.ll.in.bp[10:60], bypass=latency.ratio.ll.in.bp[10:60,49], kernel = latency.ratio.ll.in.na[10:60,49])
+latency.longform = melt(data=latency.ratio.ll.combo, id.vars = 1)
+ggplot(data = latency.longform) +
+  geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+  ggtitle("Count vs. Latency <60ns[ll][onload+kernel][64]")+
+  packet.number.plot.theme
+  
+latency.ratio.wio.combo = data.frame(size= latency.number.wio.in.bp[10:60], bypass=latency.ratio.wio.in.bp[10:60,49], kernel = latency.ratio.wio.in.na[10:60,49])
+latency.longform = melt(data=latency.ratio.wio.combo, id.vars = 1)
+ggplot(data = latency.longform) +
+  geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+  ggtitle("Count vs. Latency <60ns[wio][onload+kernel][64]")+
+  packet.number.plot.theme
+
+
+for(i in 16:256){
+  filename = sprintf("LL_COMBO_0_100_m%4d.jpg", i)
+  latency.ratio.ll.combo = data.frame(size= latency.number.ll.in.bp[10:100], bypass=latency.ratio.ll.in.bp[10:100,i-15], kernel = latency.ratio.ll.in.na[10:100,i-15])
+  latency.longform = melt(data=latency.ratio.ll.combo, id.vars = 1)
+  ggplot(data = latency.longform) +
+    geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+    ggtitle(sprintf("Count vs. Latency <100ns [ll][onload+kernel][%d]",i))+
+    packet.number.plot.theme
+  ggsave(filename=filename, width=20, height=15)
+}
+
+for(i in 16:256){
+  filename = sprintf("LL_COMBO_100_200_m%4d.jpg", i)
+  latency.ratio.ll.combo = data.frame(size= latency.number.ll.in.bp[100:200], bypass=latency.ratio.ll.in.bp[100:200,i-15], kernel = latency.ratio.ll.in.na[100:200,i-15])
+  latency.longform = melt(data=latency.ratio.ll.combo, id.vars = 1)
+  ggplot(data = latency.longform) +
+    geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+    ggtitle(sprintf("Count vs. Latency 100~200ns [ll][onload+kernel][%d]",i))+
+    packet.number.plot.theme
+  ggsave(filename=filename, width=20, height=15)
+}
+
+for(i in 114:256){
+  filename = sprintf("LL_COMBO_200_500_m%4d.jpg", i)
+  latency.ratio.ll.combo = data.frame(size= latency.number.ll.in.bp[200:500], bypass=latency.ratio.ll.in.bp[200:500,i-15], kernel = latency.ratio.ll.in.na[200:500,i-15])
+  latency.longform = melt(data=latency.ratio.ll.combo, id.vars = 1)
+  ggplot(data = latency.longform) +
+    geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+    ggtitle(sprintf("Count vs. Latency 200~500ns [ll][onload+kernel][%d]",i))+
+    packet.number.plot.theme
+  ggsave(filename=filename, width=20, height=15)
+}
+
+
+for(i in 16:256){
+  filename = sprintf("WIO_COMBO_0_60_m%4d.jpg", i)
+  latency.ratio.wio.combo = data.frame(size= latency.number.wio.in.bp[10:60], bypass=latency.ratio.wio.in.bp[10:60,i-15], kernel = latency.ratio.wio.in.na[10:60,i-15])
+  latency.longform = melt(data=latency.ratio.wio.combo, id.vars = 1)
+  ggplot(data = latency.longform) +
+    geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+    ggtitle(sprintf("Count vs. Latency <60ns [wio][onload+kernel][%d]",i))+
+    packet.number.plot.theme
+  ggsave(filename=filename, width=20, height=15)
+}
+
+for(i in 16:256){
+  filename = sprintf("TWO_COMBO_0_100_m%4d.jpg", i)
+  latency.ratio.combo = data.frame(size= latency.number.ll.in.bp[10:100], ll=latency.ratio.ll.in.bp[10:100,i-15], wio = latency.ratio.wio.in.bp[10:100,i-15])
+  latency.longform = melt(data=latency.ratio.combo, id.vars = 1)
+  ggplot(data = latency.longform) +
+    geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+    ggtitle(sprintf("Count vs. Latency <100ns[ll+wio][onload][%d]",i))+
+    packet.number.plot.theme
+  ggsave(filename=filename, width=20, height=15)
+}
+
+for(i in 16:256){
+  filename = sprintf("TWO_COMBO_100_200_m%4d.jpg", i)
+  latency.ratio.combo = data.frame(size= latency.number.ll.in.bp[100:200], ll=latency.ratio.ll.in.bp[100:200,i-15], wio = latency.ratio.wio.in.bp[100:200,i-15])
+  latency.longform = melt(data=latency.ratio.combo, id.vars = 1)
+  ggplot(data = latency.longform) +
+    geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+    ggtitle(sprintf("Count vs. Latency 100~200ns[ll+wio][onload][%d]",i))+
+    packet.number.plot.theme
+  ggsave(filename=filename, width=20, height=15)
+}
+
+for(i in 16:256){
+  filename = sprintf("TWO_COMBO_200_500_m%4d.jpg", i)
+latency.ratio.combo = data.frame(size= latency.number.ll.in.bp[200:500], ll=latency.ratio.ll.in.bp[200:500,i-15], wio = latency.ratio.wio.in.bp[200:500,i-15])
+latency.longform = melt(data=latency.ratio.combo, id.vars = 1)
+ggplot(data = latency.longform) +
+  geom_bar(aes(x = size, y=value, fill = variable, width=0.5), stat="identity", position = "dodge")+
+  ggtitle(sprintf("Count vs. Latency 200~500 ns[ll+wio][onload][%d]",i))+
+  packet.number.plot.theme
+ggsave(filename=filename, width=20, height=15)
+}
 
